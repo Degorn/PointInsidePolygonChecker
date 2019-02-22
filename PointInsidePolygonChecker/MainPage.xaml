@@ -9,6 +9,11 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <TextBlock x:Name="Result"
+                   VerticalAlignment="Top"
+                   Text="Test"/>
+        <Canvas x:Name="Canv" HorizontalAlignment="Stretch" Margin="0,75,0,0" VerticalAlignment="Stretch">
 
+        </Canvas>
     </Grid>
 </Page>
