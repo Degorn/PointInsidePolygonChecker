@@ -12,8 +12,8 @@ namespace PointInsidePolygonChecker
 
         public bool IsInside(Point point, PathFigure polygon)
         {
-            Point segmentStartPoint = polygon.StartPoint;
-            PathSegmentCollection segments = polygon.Segments;
+            var segmentStartPoint = polygon.StartPoint;
+            var segments = polygon.Segments;
             var zero = new Point(-10, -10);
 
             var intersections = new List<Point>();

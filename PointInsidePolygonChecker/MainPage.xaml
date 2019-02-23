@@ -11,9 +11,13 @@
     <Grid>
         <TextBlock x:Name="Result"
                    VerticalAlignment="Top"
-                   Text="Test"/>
-        <Canvas x:Name="Canv" HorizontalAlignment="Stretch" Margin="0,75,0,0" VerticalAlignment="Stretch">
-
+                   Height="50"
+                   Text="Test"
+                   FontSize="18"/>
+        <Canvas x:Name="Canv"
+                Background="AntiqueWhite"
+                PointerPressed="Canv_PointerPressed"              
+                Margin="0,50,0,0">
         </Canvas>
     </Grid>
 </Page>
