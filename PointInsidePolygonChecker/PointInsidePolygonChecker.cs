@@ -14,17 +14,17 @@ namespace PointInsidePolygonChecker
         {
             Point segmentStartPoint = polygon.StartPoint;
             PathSegmentCollection segments = polygon.Segments;
-            Point zero = new Point(-10, -10);
+            var zero = new Point(-10, -10);
 
-            List<Point> intersections = new List<Point>();
+            var intersections = new List<Point>();
             for (int i = 0; i < segments.Count; i++)
             {
-                List<Point> newIntersections = GetIntersections(zero, point, segmentStartPoint, segments[i]);
+                var newIntersections = GetIntersections(zero, point, segmentStartPoint, segments[i]);
                 segmentStartPoint = GetPathSegmentCoords(segments[i]).Last();
                 for (int j = 0; j < newIntersections.Count; j++)
                 {
                     bool seen = false;
-                    Point intersection = newIntersections[j];
+                    var intersection = newIntersections[j];
                     for (int k = 0; k < intersections.Count; k++)
                     {
                         if (intersections[k] == intersection)
@@ -44,39 +44,39 @@ namespace PointInsidePolygonChecker
             return intersections.Count % 2 == 1;
         }
 
-        private Point CoordMin(Point a1, Point a2)
+        private Point CoordMin(Point p1, Point p2)
         {
-            return new Point(Math.Min(a1.X, a2.X), Math.Min(a1.Y, a2.Y));
+            return new Point(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y));
         }
 
-        private Point CoordMax(Point a1, Point a2)
+        private Point CoordMax(Point p1, Point p2)
         {
-            return new Point(Math.Max(a1.X, a2.X), Math.Max(a1.Y, a2.Y));
+            return new Point(Math.Max(p1.X, p2.X), Math.Max(p1.Y, p2.Y));
         }
 
-        private Point CoordMultiply(Point c, double f)
+        private Point CoordMultiply(Point p, double f)
         {
-            return new Point(c.X * f, c.Y * f);
+            return new Point(p.X * f, p.Y * f);
         }
 
-        private Point CoordAdd(Point c1, Point c2)
+        private Point CoordAdd(Point p1, Point p2)
         {
-            return new Point(c1.X + c2.X, c1.Y + c2.Y);
+            return new Point(p1.X + p2.X, p1.Y + p2.Y);
         }
 
-        private double CoordDot(Point c1, Point c2)
+        private double CoordDot(Point p1, Point p2)
         {
-            return c1.X * c2.X + c1.Y * c2.Y;
+            return p1.X * p2.X + p1.Y * p2.Y;
         }
 
-        private Point CoordLerp(Point c1, Point c2, double t)
+        private Point CoordLerp(Point p1, Point p2, double t)
         {
-            return new Point(c1.X + (c2.X - c1.X) * t, c1.Y + (c2.Y - c1.Y) * t);
+            return new Point(p1.X + (p2.X - p1.X) * t, p1.Y + (p2.Y - p1.Y) * t);
         }
 
         private List<double> LinearRoot(double p2, double p1)
         {
-            List<double> results = new List<double>();
+            var results = new List<double>();
 
             var a = p2;
             if (a != 0)
@@ -89,7 +89,7 @@ namespace PointInsidePolygonChecker
 
         private List<double> QuadRoots(double p3, double p2, double p1)
         {
-            List<double> results = new List<double>();
+            var results = new List<double>();
 
             if (Math.Abs(p3) <= tolerance)
             {
@@ -121,7 +121,7 @@ namespace PointInsidePolygonChecker
                 return QuadRoots(p3, p2, p1);
             }
 
-            List<double> results = new List<double>();
+            var results = new List<double>();
             var c3 = p4;
             var c2 = p3 / c3;
             var c1 = p2 / c3;
@@ -181,7 +181,7 @@ namespace PointInsidePolygonChecker
 
         private List<Point> GetIntersections(Point zero, Point point, Point segmentPreviousPoint, PathSegment pathSegment)
         {
-            List<Point> coords = new List<Point>
+            var coords = new List<Point>
             {
                 segmentPreviousPoint,
             };
@@ -192,7 +192,7 @@ namespace PointInsidePolygonChecker
             }
             else if (pathSegment is LineSegment)
             {
-                List<Point> list = new List<Point>();
+                var list = new List<Point>();
                 Point? newPoint = IntersectLineLine(coords[0], coords[1], zero, point);
                 if (newPoint != null)
                 {
@@ -208,7 +208,7 @@ namespace PointInsidePolygonChecker
 
         private List<Point> GetPathSegmentCoords(PathSegment pathSegment)
         {
-            List<Point> points = new List<Point>();
+            var points = new List<Point>();
             if (pathSegment is LineSegment lineSegment)
             {
                 points.Add(lineSegment.Point);
@@ -250,9 +250,9 @@ namespace PointInsidePolygonChecker
 
         private List<Point> IntersectBezierLine(Point p1, Point p2, Point p3, Point p4, Point a1, Point a2)
         {
-            List<Point> result = new List<Point>();
-            Point min = CoordMin(a1, a2);
-            Point max = CoordMax(a1, a2);
+            var result = new List<Point>();
+            var min = CoordMin(a1, a2);
+            var max = CoordMax(a1, a2);
 
             var a = CoordMultiply(p1, -1);
             var b = CoordMultiply(p2, 3);
