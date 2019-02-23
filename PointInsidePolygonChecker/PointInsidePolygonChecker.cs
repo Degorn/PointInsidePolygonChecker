@@ -14,7 +14,7 @@ namespace PointInsidePolygonChecker
         {
             Point segmentStartPoint = polygon.StartPoint;
             PathSegmentCollection segments = polygon.Segments;
-            Point zero = new Point(0, 0);
+            Point zero = new Point(-10, -10);
 
             List<Point> intersections = new List<Point>();
             for (int i = 0; i < segments.Count; i++)
@@ -27,7 +27,7 @@ namespace PointInsidePolygonChecker
                     Point intersection = newIntersections[j];
                     for (int k = 0; k < intersections.Count; k++)
                     {
-                        if (CoordEqual(intersections[k], intersection))
+                        if (intersections[k] == intersection)
                         {
                             seen = true;
                             break;
@@ -42,11 +42,6 @@ namespace PointInsidePolygonChecker
             }
 
             return intersections.Count % 2 == 1;
-        }
-
-        private bool CoordEqual(Point p1, Point p2)
-        {
-            return p1.X == p2.X && p1.Y == p2.Y;
         }
 
         private Point CoordMin(Point a1, Point a2)
@@ -72,6 +67,11 @@ namespace PointInsidePolygonChecker
         private double CoordDot(Point c1, Point c2)
         {
             return c1.X * c2.X + c1.Y * c2.Y;
+        }
+
+        private Point CoordLerp(Point c1, Point c2, double t)
+        {
+            return new Point(c1.X + (c2.X - c1.X) * t, c1.Y + (c2.Y - c1.Y) * t);
         }
 
         private List<double> LinearRoot(double p2, double p1)
@@ -155,7 +155,7 @@ namespace PointInsidePolygonChecker
                 var distance = Math.Sqrt(-a / 3);
                 var angle = Math.Atan2(Math.Sqrt(-discrim), -halfB) / 3;
                 var cos = Math.Cos(angle);
-                var sin = Math.Sign(angle);
+                var sin = Math.Sin(angle);
                 var sqrt3 = Math.Sqrt(3);
                 results.Add(2 * distance * cos - offset);
                 results.Add(-distance * (cos + sqrt3 * sin) - offset);
@@ -178,11 +178,6 @@ namespace PointInsidePolygonChecker
             return results;
         }
 
-        private Point CoordLerp(Point c1, Point c2, double t)
-        {
-            return new Point(c1.X + (c2.X - c1.X) * t, c1.Y + (c2.Y - c1.Y) * t);
-        }
-
 
         private List<Point> GetIntersections(Point zero, Point point, Point segmentPreviousPoint, PathSegment pathSegment)
         {
@@ -191,17 +186,19 @@ namespace PointInsidePolygonChecker
                 segmentPreviousPoint,
             };
             coords.AddRange(GetPathSegmentCoords(pathSegment));
-            if (pathSegment is QuadraticBezierSegment ||
-                pathSegment is BezierSegment)
+            if (pathSegment is BezierSegment)
             {
                 return IntersectBezierLine(coords[0], coords[1], coords[2], coords[3], zero, point);
             }
             else if (pathSegment is LineSegment)
             {
-                return new List<Point>
+                List<Point> list = new List<Point>();
+                Point? newPoint = IntersectLineLine(coords[0], coords[1], zero, point);
+                if (newPoint != null)
                 {
-                    IntersectLineLine(coords[0], coords[1], zero, point)
-                };
+                    list.Add((Point)newPoint);
+                }
+                return list;
             }
             else
             {
@@ -229,7 +226,7 @@ namespace PointInsidePolygonChecker
             return points;
         }
 
-        private Point IntersectLineLine(Point a1, Point a2, Point b1, Point b2)
+        private Point? IntersectLineLine(Point a1, Point a2, Point b1, Point b2)
         {
             var ua_t = (b2.X - b1.X) * (a1.Y - b1.Y) - (b2.Y - b1.Y) * (a1.X - b1.X);
             var ub_t = (a2.X - a1.X) * (a1.Y - b1.Y) - (a2.Y - a1.Y) * (a1.X - b1.X);
@@ -243,12 +240,12 @@ namespace PointInsidePolygonChecker
                 if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1)
                 {
                     return new Point(
-                            a1.X + ua * (a2.X - a1.X),
-                            a1.Y + ua * (a2.Y - a1.Y));
+                        a1.X + ua * (a2.X - a1.X),
+                        a1.Y + ua * (a2.Y - a1.Y));
                 }
             }
 
-            return new Point();
+            return null;
         }
 
         private List<Point> IntersectBezierLine(Point p1, Point p2, Point p3, Point p4, Point a1, Point a2)
